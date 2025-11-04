@@ -1,0 +1,149 @@
+:root {
+  --border: #e5e7eb;
+  --bg-muted: #f8fafc;
+  --bg-accent: #eef2ff;
+  --text: #111827;
+  --text-muted: #6b7280;
+  --primary: #4f46e5;
+}
+
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  color: var(--text);
+}
+
+.header {
+  width: 97vw;
+  padding: 12px 1vw;
+  margin: 0 auto;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+}
+
+.brand {
+  font-weight: 800;
+  letter-spacing: 2px;
+  font-size: 22px;
+}
+
+.userbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.welcome {
+  color: var(--text);
+}
+
+.layout {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  gap: 16px;
+  padding: 16px;
+  background: var(--bg-muted);
+}
+
+.sidebar {
+  border-right: 1px solid var(--border);
+  padding-right: 12px;
+  background: white;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.section-title {
+  margin: 8px 0 12px;
+}
+
+.categories {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.category-btn {
+  width: 100%;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.category-btn:hover {
+  background: #f3f4f6;
+}
+
+.category-btn.active {
+  background: var(--bg-accent);
+  border-color: #c7d2fe;
+  font-weight: 600;
+}
+
+.content {
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+
+.questions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.question-card {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: white;
+}
+
+.question-title {
+  font-weight: 600;
+}
+
+.question-body {
+  color: #374151;
+  margin-top: 6px;
+}
+
+.question-meta {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+/* Generic buttons */
+.btn {
+  color: black;
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #f9fafb;
+}
+
+.btn-secondary {
+  background: #fff;
+}

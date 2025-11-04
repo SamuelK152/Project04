@@ -14,4 +14,7 @@ app.get('/api/health', (req, res) => res.json({ ok: true, timestamp: new Date().
 
 app.use('/api/auth', require('./routes/auth.routes'));
 
+app.use('/api/categories', require('./routes/category.routes'));
+app.use('/api/questions', require('./routes/question.routes'));
+
 module.exports = app;

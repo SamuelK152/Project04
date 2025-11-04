@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../services/api";
+import "./Auth.css";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -22,15 +23,15 @@ export default function Register() {
   };
 
   return (
-    <div style={{ maxWidth: 420, margin: "3rem auto" }}>
+    <div className="auth">
       <h2>Create account</h2>
-      {error && <p style={{ color: "crimson" }}>{error}</p>}
-      <form onSubmit={onSubmit}>
-        <div>
+      {error && <p className="error">{error}</p>}
+      <form onSubmit={onSubmit} className="auth-form">
+        <div className="form-group">
           <label>Name</label>
           <input name="name" value={form.name} onChange={onChange} required />
         </div>
-        <div style={{ marginTop: 8 }}>
+        <div className="form-group">
           <label>Email</label>
           <input
             name="email"
@@ -40,7 +41,7 @@ export default function Register() {
             required
           />
         </div>
-        <div style={{ marginTop: 8 }}>
+        <div className="form-group">
           <label>Password</label>
           <input
             name="password"
@@ -50,11 +51,11 @@ export default function Register() {
             required
           />
         </div>
-        <button type="submit" style={{ marginTop: 12 }}>
+        <button type="submit" className="btn btn-primary">
           Register
         </button>
       </form>
-      <p style={{ marginTop: 12 }}>
+      <p className="auth-alt">
         Already have an account? <Link to="/login">Login</Link>
       </p>
     </div>
