@@ -7,7 +7,10 @@ module.exports = function auth(req, res, next) {
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || 'dev_secret');
-        req.userId = decoded.sub;
+        const userId = decoded.sub || decoded.id || decoded.userId;
+        if (!userId) return res.status(401).json({ message: 'Invalid token' });
+        req.userId = String(userId);
+        req.user = { id: req.userId };
         next();
     } catch {
         return res.status(401).json({ message: 'Invalid token' });

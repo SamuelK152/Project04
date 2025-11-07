@@ -17,4 +17,8 @@ app.use('/api/auth', require('./routes/auth.routes'));
 app.use('/api/categories', require('./routes/category.routes'));
 app.use('/api/questions', require('./routes/question.routes'));
 
+const answerRoutes = require('./routes/answer.routes');
+
+app.use('/api/answers', answerRoutes);
+
 module.exports = app;

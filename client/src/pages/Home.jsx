@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 import "./Home.css";
+import NewQuestionModal from "../components/NewQuestionModal";
+import AnswerModal from "../components/AnswerModal";
 
 export default function Home() {
   const [me, setMe] = useState(null);
@@ -8,6 +10,9 @@ export default function Home() {
   const [activeCat, setActiveCat] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loadingQ, setLoadingQ] = useState(false);
+  const [showNewQ, setShowNewQ] = useState(false);
+  const [answerFor, setAnswerFor] = useState(null);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null); // set this when user picks a category
 
   useEffect(() => {
     api
@@ -35,8 +40,17 @@ export default function Home() {
     window.location.href = "/login";
   };
 
+  const refreshQuestions = async () => {
+    if (!selectedCategoryId) return;
+    await api
+      .get("/questions", { params: { category: selectedCategoryId } })
+      .then(() => {
+        // trigger your existing state update if needed
+      });
+  };
+
   return (
-    <div className="home">
+    <>
       <header className="header">
         <div className="brand">TITLE</div>
         <div className="userbar">
@@ -54,7 +68,10 @@ export default function Home() {
             {categories.map((c) => (
               <li key={c._id}>
                 <button
-                  onClick={() => setActiveCat(c)}
+                  onClick={() => {
+                    setActiveCat(c);
+                    setSelectedCategoryId(c._id);
+                  }}
                   className={`category-btn ${
                     activeCat?._id === c._id ? "active" : ""
                   }`}
@@ -67,9 +84,19 @@ export default function Home() {
         </aside>
 
         <section className="content">
-          <h3 className="section-title">
-            {activeCat ? `Questions in ${activeCat.name}` : "Questions"}
-          </h3>
+          <div className="question-list-header">
+            <h2 className="section-title">
+              {activeCat ? `Questions in ${activeCat.name}` : "Questions"}
+            </h2>
+            {selectedCategoryId && (
+              <button
+                className="btn btn-primary"
+                onClick={() => setShowNewQ(true)}
+              >
+                New Question
+              </button>
+            )}
+          </div>
 
           {loadingQ ? (
             <p className="muted">Loading...</p>
@@ -85,12 +112,31 @@ export default function Home() {
                     Asked by {q.author?.name || "Unknown"} on{" "}
                     {new Date(q.createdAt).toLocaleString()}
                   </div>
+                  <button
+                    onClick={() => setAnswerFor(q)}
+                    className="btn btn-secondary"
+                  >
+                    Answer
+                  </button>
                 </li>
               ))}
             </ul>
           )}
         </section>
       </main>
-    </div>
+
+      <NewQuestionModal
+        open={showNewQ}
+        onClose={() => setShowNewQ(false)}
+        categoryId={selectedCategoryId}
+        onCreated={refreshQuestions}
+      />
+      <AnswerModal
+        open={!!answerFor}
+        onClose={() => setAnswerFor(null)}
+        question={answerFor}
+        onUpdated={refreshQuestions}
+      />
+    </>
   );
 }
