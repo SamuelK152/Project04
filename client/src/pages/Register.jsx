@@ -29,11 +29,18 @@ export default function Register() {
       <form onSubmit={onSubmit} className="auth-form">
         <div className="form-group">
           <label>Name</label>
-          <input name="name" value={form.name} onChange={onChange} required />
+          <input
+            className="form-input"
+            name="name"
+            value={form.name}
+            onChange={onChange}
+            required
+          />
         </div>
         <div className="form-group">
           <label>Email</label>
           <input
+            className="form-input"
             name="email"
             type="email"
             value={form.email}
@@ -44,6 +51,7 @@ export default function Register() {
         <div className="form-group">
           <label>Password</label>
           <input
+            className="form-input"
             name="password"
             type="password"
             value={form.password}
@@ -51,7 +59,7 @@ export default function Register() {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="btn btn-register">
           Register
         </button>
       </form>

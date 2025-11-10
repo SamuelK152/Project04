@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
-import "./Home.css";
-import NewQuestionModal from "../components/NewQuestionModal";
-import AnswerModal from "../components/AnswerModal";
+import "./home.css";
+import QuestionDetail from "../components/QuestionDetail";
 
 export default function Home() {
   const [me, setMe] = useState(null);
@@ -10,9 +9,10 @@ export default function Home() {
   const [activeCat, setActiveCat] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [loadingQ, setLoadingQ] = useState(false);
-  const [showNewQ, setShowNewQ] = useState(false);
-  const [answerFor, setAnswerFor] = useState(null);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(null); // set this when user picks a category
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
+  const [showNewQForm, setShowNewQForm] = useState(false);
+  const [newQTitle, setNewQTitle] = useState("");
+  const [newQBody, setNewQBody] = useState("");
 
   useEffect(() => {
     api
@@ -25,28 +25,49 @@ export default function Home() {
     });
   }, []);
 
+  const loadQuestions = async (categoryId) => {
+    if (!categoryId) return;
+    setLoadingQ(true);
+    try {
+      const { data } = await api.get("/questions", {
+        params: { category: categoryId },
+      });
+      setQuestions(data.questions);
+    } catch {
+      setQuestions([]);
+    } finally {
+      setLoadingQ(false);
+    }
+  };
+
   useEffect(() => {
     if (!activeCat) return;
-    setLoadingQ(true);
-    api
-      .get("/questions", { params: { category: activeCat._id } })
-      .then((r) => setQuestions(r.data.questions))
-      .catch(() => setQuestions([]))
-      .finally(() => setLoadingQ(false));
-  }, [activeCat]);
+    loadQuestions(activeCat._id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeCat?._id]);
 
   const logout = () => {
     localStorage.removeItem("token");
     window.location.href = "/login";
   };
 
-  const refreshQuestions = async () => {
-    if (!selectedCategoryId) return;
-    await api
-      .get("/questions", { params: { category: selectedCategoryId } })
-      .then(() => {
-        // trigger your existing state update if needed
-      });
+  const createQuestion = async (e) => {
+    e.preventDefault();
+    if (!activeCat) return;
+    await api.post("/questions", {
+      title: newQTitle,
+      body: newQBody,
+      category: activeCat._id,
+    });
+    setNewQTitle("");
+    setNewQBody("");
+    setShowNewQForm(false);
+    await loadQuestions(activeCat._id);
+  };
+
+  const onBackFromDetail = async () => {
+    setSelectedQuestion(null);
+    if (activeCat) await loadQuestions(activeCat._id);
   };
 
   return (
@@ -70,7 +91,8 @@ export default function Home() {
                 <button
                   onClick={() => {
                     setActiveCat(c);
-                    setSelectedCategoryId(c._id);
+                    setSelectedQuestion(null);
+                    setShowNewQForm(false);
                   }}
                   className={`category-btn ${
                     activeCat?._id === c._id ? "active" : ""
@@ -83,60 +105,84 @@ export default function Home() {
           </ul>
         </aside>
 
-        <section className="content">
-          <div className="question-list-header">
-            <h2 className="section-title">
-              {activeCat ? `Questions in ${activeCat.name}` : "Questions"}
-            </h2>
-            {selectedCategoryId && (
-              <button
-                className="btn btn-primary"
-                onClick={() => setShowNewQ(true)}
-              >
-                New Question
-              </button>
-            )}
-          </div>
+        {!selectedQuestion ? (
+          <section className="content">
+            <div className="question-list-header">
+              <h2 className="section-title">
+                {activeCat ? `Questions in ${activeCat.name}` : "Questions"}
+              </h2>
+              {activeCat && (
+                <button
+                  className="btn btn-primary"
+                  onClick={() => setShowNewQForm((s) => !s)}
+                >
+                  {showNewQForm ? "Close" : "New Question"}
+                </button>
+              )}
+            </div>
 
-          {loadingQ ? (
-            <p className="muted">Loading...</p>
-          ) : questions.length === 0 ? (
-            <p className="muted">No questions found.</p>
-          ) : (
-            <ul className="questions">
-              {questions.map((q) => (
-                <li key={q._id} className="question-card">
-                  <div className="question-title">{q.title}</div>
-                  <div className="question-body">{q.body}</div>
-                  <div className="question-meta">
-                    Asked by {q.author?.name || "Unknown"} on{" "}
-                    {new Date(q.createdAt).toLocaleString()}
-                  </div>
+            {showNewQForm && (
+              <form onSubmit={createQuestion} className="new-question-form">
+                <input
+                  value={newQTitle}
+                  onChange={(e) => setNewQTitle(e.target.value)}
+                  placeholder="Title"
+                  required
+                />
+                <textarea
+                  value={newQBody}
+                  onChange={(e) => setNewQBody(e.target.value)}
+                  placeholder="Details"
+                  required
+                />
+                <div className="actions">
                   <button
-                    onClick={() => setAnswerFor(q)}
-                    className="btn btn-secondary"
+                    type="button"
+                    className="btn"
+                    onClick={() => setShowNewQForm(false)}
                   >
-                    Answer
+                    Cancel
                   </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-      </main>
+                  <button type="submit" className="btn btn-primary">
+                    Post
+                  </button>
+                </div>
+              </form>
+            )}
 
-      <NewQuestionModal
-        open={showNewQ}
-        onClose={() => setShowNewQ(false)}
-        categoryId={selectedCategoryId}
-        onCreated={refreshQuestions}
-      />
-      <AnswerModal
-        open={!!answerFor}
-        onClose={() => setAnswerFor(null)}
-        question={answerFor}
-        onUpdated={refreshQuestions}
-      />
+            {loadingQ ? (
+              <p className="muted">Loading...</p>
+            ) : questions.length === 0 ? (
+              <p className="muted">No questions found.</p>
+            ) : (
+              <ul className="questions">
+                {questions.map((q) => (
+                  <li
+                    key={q._id}
+                    className="question-card"
+                    role="button"
+                    onClick={() => setSelectedQuestion(q)}
+                  >
+                    <div className="question-title">{q.title}</div>
+                    <div className="question-body">{q.body}</div>
+                    <div className="question-meta">
+                      Asked by {q.author?.name || "Unknown"} on{" "}
+                      {new Date(q.createdAt).toLocaleString()}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ) : (
+          <QuestionDetail
+            question={selectedQuestion}
+            me={me}
+            onBack={onBackFromDetail}
+            onDeleted={onBackFromDetail}
+          />
+        )}
+      </main>
     </>
   );
 }

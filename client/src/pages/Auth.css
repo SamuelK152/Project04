@@ -10,8 +10,6 @@ body {
   margin: 0 auto;
   display: flex;
   justify-content: center;
-  width: 100vw;
-  min-height: 100vh;
 }
 
 .auth {
@@ -43,29 +41,24 @@ body {
   gap: 6px;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
-  border: 1px solid var(--border);
+.form-input {
+  border: 1px solid #6b7280;
   border-radius: 6px;
   padding: 8px 10px;
+  background-color: #f3f4f6;
+  color: black;
 }
 
 .btn {
-  border: 1px solid var(--border);
+  border: 1px solid #6b7280;
   padding: 8px 12px;
   border-radius: 6px;
-  background: white;
+  background: #f3f4f6;
+  color: black;
   cursor: pointer;
 }
 
-.btn-primary {
-  background: var(--primary);
-  color: var(--primary-contrast);
-  border-color: var(--primary);
-}
-
-.btn-primary:hover {
+.btn-register:hover {
   filter: brightness(0.98);
 }
 

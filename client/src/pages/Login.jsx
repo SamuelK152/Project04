@@ -30,6 +30,7 @@ export default function Login() {
         <div className="form-group">
           <label>Email</label>
           <input
+            className="form-input"
             name="email"
             type="email"
             value={form.email}
@@ -40,6 +41,7 @@ export default function Login() {
         <div className="form-group">
           <label>Password</label>
           <input
+            className="form-input"
             name="password"
             type="password"
             value={form.password}
