@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import api from "../services/api";
 
+function getId(x) {
+  if (!x) return undefined;
+  if (typeof x === "string") return x;
+  return x._id || x.id;
+}
+
 export default function QuestionDetail({ question, me, onBack, onDeleted }) {
   const [answers, setAnswers] = useState([]);
   const [answerBody, setAnswerBody] = useState("");
   const [commentInputs, setCommentInputs] = useState({});
+
+  const myId = getId(me);
 
   const loadAnswers = async () => {
     const { data } = await api.get("/answers", {
@@ -44,7 +52,12 @@ export default function QuestionDetail({ question, me, onBack, onDeleted }) {
     onDeleted?.();
   };
 
-  const isQuestionOwner = me && question?.author?._id === me._id;
+  const deleteComment = async (answerId, commentId) => {
+    await api.delete(`/answers/${answerId}/comments/${commentId}`);
+    await loadAnswers();
+  };
+
+  const isQuestionOwner = myId && getId(question.author) === myId;
 
   return (
     <section className="content">
@@ -90,14 +103,14 @@ export default function QuestionDetail({ question, me, onBack, onDeleted }) {
           <p className="muted">No answers yet.</p>
         ) : (
           answers.map((a) => {
-            const isOwner = me && a.author?._id === me._id;
+            const isAnswerOwner = myId && getId(a.author) === myId;
             return (
               <div key={a._id} className="answer">
                 <div className="answer-header">
                   <div className="meta">
                     {a.author?.name} • {new Date(a.createdAt).toLocaleString()}
                   </div>
-                  {isOwner && (
+                  {isAnswerOwner && (
                     <button
                       className="btn btn-danger"
                       onClick={() => deleteAnswer(a._id)}
@@ -109,15 +122,28 @@ export default function QuestionDetail({ question, me, onBack, onDeleted }) {
                 <div className="answer-body">{a.body}</div>
 
                 <div className="comments">
-                  {(a.comments || []).map((c) => (
-                    <div key={c._id} className="comment">
-                      <div className="comment-meta">
-                        {c.author?.name} •{" "}
-                        {new Date(c.createdAt).toLocaleString()}
+                  {(a.comments || []).map((c) => {
+                    const isCommentOwner = myId && getId(c.author) === myId;
+                    return (
+                      <div key={c._id} className="comment">
+                        <div className="comment-meta">
+                          {c.author?.name} •{" "}
+                          {new Date(c.createdAt).toLocaleString()}
+                          {isCommentOwner && (
+                            <button
+                              type="button"
+                              className="btn btn-danger"
+                              style={{ marginLeft: 8 }}
+                              onClick={() => deleteComment(a._id, c._id)}
+                            >
+                              Delete
+                            </button>
+                          )}
+                        </div>
+                        <div className="comment-body">{c.body}</div>
                       </div>
-                      <div className="comment-body">{c.body}</div>
-                    </div>
-                  ))}
+                    );
+                  })}
                   <div className="comment-form">
                     <input
                       className="comment-input"

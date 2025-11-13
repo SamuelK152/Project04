@@ -47,11 +47,11 @@ exports.login = async (req, res) => {
 
 exports.me = async (req, res) => {
     try {
-        const user = await User.findById(req.userId);
-        if (!user) return res.status(404).json({ message: 'User not found' });
-        res.json({ user: user.toJSON() });
+        const user = await User.findById(req.userId).lean();
+        if (!user) return res.status(404).json({ message: 'Not found' });
+        const { _id, name, email } = user;
+        res.json({ user: { _id: String(_id), id: String(_id), name, email } });
     } catch (err) {
-        console.error(err);
         res.status(500).json({ message: 'Server error' });
     }
 };
