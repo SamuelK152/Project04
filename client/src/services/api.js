@@ -3,7 +3,7 @@ import axios from 'axios';
 const base =
   import.meta.env.MODE === 'development'
     ? '/api'
-    : 'https://your-service.onrender.com/api'; // replace with your Render URL
+    : 'https://project04api.onrender.com/api';
 
 const api = axios.create({ baseURL: base });
 
