@@ -15,10 +15,14 @@ export default function Home() {
   const [newQBody, setNewQBody] = useState("");
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
     api
       .get("/auth/me")
       .then((r) => setMe(r.data.user))
       .catch(() => setMe(null));
+  }, []);
+  useEffect(() => {
     api.get("/categories").then((r) => {
       setCategories(r.data.categories);
       if (r.data.categories.length) setActiveCat(r.data.categories[0]);

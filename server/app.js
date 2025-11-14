@@ -13,12 +13,8 @@ app.use(express.json());
 app.get('/api/health', (req, res) => res.json({ ok: true, timestamp: new Date().toISOString() }));
 
 app.use('/api/auth', require('./routes/auth.routes'));
-
 app.use('/api/categories', require('./routes/category.routes'));
 app.use('/api/questions', require('./routes/question.routes'));
-
-const answerRoutes = require('./routes/answer.routes');
-
-app.use('/api/answers', answerRoutes);
+app.use('/api/answers', require('./routes/answer.routes'));
 
 module.exports = app;

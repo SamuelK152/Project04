@@ -12,7 +12,7 @@ module.exports = function auth(req, res, next) {
         req.userId = String(userId);
         req.user = { id: req.userId };
         next();
-    } catch {
+    } catch (e) {
         return res.status(401).json({ message: 'Invalid token' });
     }
 };
