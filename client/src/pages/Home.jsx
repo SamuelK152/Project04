@@ -52,7 +52,7 @@ export default function Home() {
 
   const logout = () => {
     localStorage.removeItem("token");
-    window.location.href = "/login";
+    window.location.href = "/Project04/login";
   };
 
   const createQuestion = async (e) => {
